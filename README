@@ -1,13 +1,51 @@
 ResourceHelper
 ==============
 
-Introduction goes here.
+Helpers for using ActiveResource
 
+In this gem/plugin and documentation, I refer to the notion of client/server or front/back end.  Regardless of your architecture, 
+whatever is using a model as an ActiveRecord is the server or backend, and whatever is using it as an ActiveResource is
+the client or frontend.
 
 Example
 =======
 
-Example goes here.
+Backend stuff
+----------------------------
+# controller will redir to a callback tag if present, otherwise render whatever
+  callback and render :xml => @foo.to_xml
+# basic actions necessary for well-behaved resource server
+  -- XML index view on every controller
+  index
+  -- return a new, blank instance in XML
+  new
+  -- support method for using ActiveResource::count
+  count
+  
+  
+Frontend stuff
+----------------------------
+# ActiveResource Foo
+  Foo.count # -> 2
+  
+# ActiveResource Foo
+  Foo.generate -> a new Foo instance
+  
+# generates a tag for callback, for forms
+  %= index_callback_tag(Foo)
+  when used with callback on the backend, forms will "come back" to the frontend
+  
+# generates a blank associated ActiveResource instead of raising an error on a nil association
+# ActiveResource::method_missing_with_recover_nil_association
+  before: @foo.bar -> raises error, frontend has no idea what a "bar" is if none is provided
+  after: @foo.bar  -> even if no bar is associated, will return a blank instance
+
+# useful URL generators for ActiveResource
+ Foo.plural_url     -> http://example.com/foos.xml
+ Foo.singular_url(1)   -> http://example.com/foo/1
 
 
-Copyright (c) 2008 [name of plugin creator], released under the MIT license
+
+Copyright (c) 2008 [Bryan Taylor], released under the MIT license
+
+see more at http://rubyisbeautiful.com
