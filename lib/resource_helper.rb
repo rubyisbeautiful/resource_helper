@@ -1,86 +1,24 @@
-module ActiveResource
-  class Base
-    class <<self
-      
-      def generate
-        instantiate_record(connection.get(self.plural_url_without_format.to_s + "/new"))
-      end
-      
-      def plural_url(params=nil, escape=true)
-        tmp = site.dup
-        unless params.blank?
-          query = ''
-          params.each_pair do |k,v|
-            if escape
-              query << CGI.escape("#{k}=#{v}&")
-            else
-              query << "#{k}=#{v}"
-            end
-          end
-        end
-        tmp.path = collection_path
-        tmp.query = query
-        return tmp
-      end
-      
-      def plural_url_without_format
-        self.plural_url.to_s[0..-5]
-      end
-      
-      def singular_url(ident, params=nil, escape=true)
-        tmp = site.dup
-        unless params.blank?
-          query = ''
-          params.each_pair do |k,v|
-            if escape
-              query << CGI.escape("#{k}=#{v}&")
-            else
-              query << "#{k}=#{v}"
-            end
-          end
-        end 
-        tmp.path = element_path(ident)
-        tmp.query = query
-        return tmp
-      end
-      
-      def count(args={})
-        # args.symbolize_keys!
-        params = {}
-        params[:conditions] = args[:conditions]  || {}
-        params[:order]      = args[:order]       || {}
-        params[:group]      = args[:group]       || {}
-        self.get(:count, params)
-      end
-    end
-    
-    def singular_url(params=nil, escape=true)
-      self.class.singular_url(self.to_param,params,escape)
-    end
-    
-    def method_missing_with_recover_nil_association(method, *args, &block)
-      # check if the string contains the name of a valid active resource model
-      begin
-        unless method.to_s.camelize.constantize.included_modules.include? ActiveResource::CustomMethods
-          return method_missing_without_recover_nil_association(method, *args, &block) 
-        end
-      rescue NameError
-        return method_missing_without_recover_nil_association(method, *args, &block)
-      end
-      # now because ActiveResource::Base has a method missing already, have to see if an association 
-      # data is already available
-      if respond_to? method
-        return attributes[method.to_s]
-      else
-        return method.to_s.camelize.constantize.generate
-      end
-    end
-    alias_method_chain :method_missing, :recover_nil_association
-    
-  end
-end
-
+# include this in ApplicationHelper if you want these
 module ResourceViewHelper
+  
+  # very useful for proper form functions.
+  # when calling an ActiveResource URL from a "regular" UI, you would normally get the result of a controller's method
+  # from the ActiveResource _server_.  For example, if on the AR server you have a typical create method
+  # def create
+  #   @foo = Foo.create(params[:foo])
+  #   respond_to do |format|
+  #     format.html
+  #     format.xml { render :nothing => true. :status => :created }
+  #   end
+  # end
+  # 
+  # you would get a blank screen on your UI front end.
+  # using this method, in conjunction with the the callback_or_render resource_helper method, you get a callback every time
+  # use in for like this
+  # <form>
+  #  index_callback_tag(Foo)
+  # </form>
+  # outputs something like <input type="hidden" name="callback" value="http://front-end-ui.example.com/foos"
   def index_callback_tag(mod)
     hidden_field_tag(:callback, instance_eval("#{mod.to_s.tableize}_url"))
   end
