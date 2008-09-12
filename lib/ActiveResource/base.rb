@@ -4,6 +4,14 @@ module ActiveResource
     # Class Methods
     class <<self
       
+			def all
+			  find(:all)
+			end
+
+			def first
+			  find(:first)
+			end
+
       # Generate a blank resource with the fields filled in to nil or default values (See Also ApplicationController::new) ?
       def generate
         instantiate_record(connection.get(self.plural_url_without_format.to_s + "/new"))
