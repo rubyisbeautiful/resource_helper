@@ -76,6 +76,13 @@ module ActiveResource
     end
     
     # Instance Methods
+    # Compatability methods
+    # Provides update_attributes
+    def update_attributes(args)
+      load(args)
+      save
+    end
+      
     # return the single URI object to this instance
     # convenience method, just wraps to class
     # form_for :foo, @foo, @foo.singular_url.to_s, :method => :post
