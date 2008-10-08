@@ -2,8 +2,10 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
 
+import File.dirname(__FILE__) + '/tasks/resource_helper_tasks.rake'
+
 desc 'Default: run unit tests.'
-task :default => :test
+task :default => :specs
 
 desc 'Test the resource_helper plugin.'
 Rake::TestTask.new(:test) do |t|

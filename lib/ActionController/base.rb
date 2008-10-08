@@ -16,7 +16,7 @@ module ActionController
       instance_variable_set("@#{self.class.to_s.downcase.pluralize}".to_sym,nil)
       # Chnages FooBarController -> FooBar
       klass = self.class.to_s[0..-11].singularize.constantize
-      ivar = klass.find(:all, :conditions => params[:conditions], :order => params[:order], :group => params[:group])
+      ivar = klass.find(:all, :conditions => params[:conditions], :order => params[:order], :group => params[:group], :limit => params[:limit])
       render :xml => ivar.to_xml and return false
     end
 
