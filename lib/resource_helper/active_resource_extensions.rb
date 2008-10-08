@@ -15,6 +15,10 @@ module ResourceHelper
 			def first
 			  find(:first)
 			end
+			
+			def last
+			  find(:all, :params => { :order => "id DESC", :limit => 1 })
+			end
 
       # Generate a blank resource with the fields filled in to nil or default values (See Also ApplicationController::new) ?
       def generate
